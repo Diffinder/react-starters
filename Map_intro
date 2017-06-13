@@ -1,0 +1,45 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+//when a component is added to the DOM, it's called mounting and when it's removed, it's demounting.
+class App extends React.Component {
+    constructor(){
+        super();
+        this.state = {items: []}
+    }
+
+    componentWillMount(){
+        fetch('http://swapi.co/api/people/?format=json').then(response => response.json()).then(({results: itemsList}) => this.setState({items: itemsList}))
+        //fetch('http://swapi.co/api/people/?format=json').then(response => response.json()).then(({results: items}) => this.setState({items}))
+    }//we're using star wars api to get a sample data to store it in our items array\
+
+
+    update(){
+        ReactDOM.render(<App val={this.props.val + 1}/>,document.getElementById('root'));
+    }
+
+    filter(e){
+        this.setState({filter: e.target.value});
+    }
+
+    render(){
+        let items = this.state.items;
+        if(this.state.filter){
+            items = items.filter(item => item.name.toLowerCase().includes(this.state.filter.toLowerCase()));
+
+        }
+        return(
+            <ul>
+                <input type="text" onChange={this.filter.bind(this)}/>
+                {items.map((item,i) => <li key={i} id={i+1}>{item.name}</li> )}
+                {items.map((item,i) => <Person person={item} key={i} /> )}
+
+            </ul>
+        );
+    }
+
+}
+
+const Person = (props) => <li key={props.key}>{props.person.name}</li>;
+
+export default App;
